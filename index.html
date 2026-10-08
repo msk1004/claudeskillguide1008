@@ -44,6 +44,16 @@ table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(-
 th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
 th{background:#eef1f6}
 ul{padding-left:22px}
+.fd{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0}
+.lane{display:flex;align-items:stretch;gap:6px;padding:8px 0}
+.lane+.lane{border-top:1px dashed var(--line)}
+.who{flex:0 0 84px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:700;border-radius:8px;padding:4px}
+.who.h{background:#fff1e0;color:#b3590b}.who.c{background:#e9eefe;color:var(--acc)}.who.s{background:#e3f6f0;color:#0b7a5e}
+.bx{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;line-height:1.5;border-radius:8px;padding:8px 6px}
+.bx.h{background:#fff1e0;border:1px solid #f3cf9c}.bx.c{background:#e9eefe;border:1px solid #c3d0fb}.bx.s{background:#e3f6f0;border:1px solid #a9e0d0}
+.bx.dim{border-style:dashed}.bx.wide{flex:1;text-align:left;justify-content:flex-start;padding:8px 14px}
+.ar{align-self:center;color:#9aa4b5;font-weight:700;flex:0 0 auto}
+@media(max-width:700px){.lane{flex-direction:column}.who{flex:none;padding:6px}.ar{transform:rotate(90deg);margin:0 auto}}
 footer{padding:40px 0 60px;color:var(--sub);font-size:13px;text-align:center}
 @media(max-width:600px){h1{font-size:24px}.step{padding-left:56px}}
 </style>
@@ -54,7 +64,7 @@ footer{padding:40px 0 60px;color:var(--sub);font-size:13px;text-align:center}
 <span class="tag">Claude Code スキル解説</span>
 <h1>資料を1コマンドでWeb公開 ＆<br>Notion議事録を自動でフォルダ整理</h1>
 <p class="lead">Claude Codeを使っている方なら、どなたでも導入できる2つの「スキル」をご紹介します。各スキルについて、まず「何ができるか」、次に「どう作るか」の順に解説します。</p>
-<nav><a href="#s0">スキルとは？</a><a href="#a">① GitHub Pages公開スキル</a><a href="#b">② Notion議事録同期スキル</a><a href="#faq">つまずきやすい点</a><a href="#ai">Claude向け導入ガイド</a></nav>
+<nav><a href="#s0">スキルとは？</a><a href="#image">使用イメージ</a><a href="#a">① GitHub Pages公開スキル</a><a href="#b">② Notion議事録同期スキル</a><a href="#faq">つまずきやすい点</a><a href="#ai">Claude向け導入ガイド</a></nav>
 </div></header>
 
 <main class="wrap">
@@ -82,6 +92,93 @@ footer{padding:40px 0 60px;color:var(--sub);font-size:13px;text-align:center}
 <div class="step"><h4>Claudeの質問に答える</h4>
 <p>導入したいスキルの選択、GitHubやNotionの利用状況、保存先フォルダなどを聞かれます。答えるだけで、必要なコマンドの案内からSKILL.mdの作成、試運転までClaudeが進めます。</p></div>
 </div>
+</section>
+
+<section id="image">
+<h2>使用イメージ：仕組みと「自走」する範囲</h2>
+<p>それぞれのスキルで、<b>人がやること</b>は最初と最後の一言だけです。間の作業は、Claude Codeがスキル（手順書）に沿って自走します。</p>
+
+<h3>① GitHub Pages公開スキルの流れ</h3>
+<div class="fd">
+  <div class="lane"><span class="who h">あなた</span>
+    <div class="bx h">「/gitpages で公開して」と入力</div>
+    <div class="ar">→</div>
+    <div class="bx h dim">名前案を確認して「OK」</div>
+    <div class="ar">→</div>
+    <div class="bx h">URLを受け取って共有</div>
+  </div>
+  <div class="lane"><span class="who c">Claude Code<br>（自走）</span>
+    <div class="bx c">スキルを読む</div>
+    <div class="ar">→</div>
+    <div class="bx c">HTMLと画像を集める</div>
+    <div class="ar">→</div>
+    <div class="bx c">公開名を自動命名</div>
+    <div class="ar">→</div>
+    <div class="bx c">GitHubにアップ<br>＋ Pages公開設定</div>
+    <div class="ar">→</div>
+    <div class="bx c">公開できたか確認</div>
+  </div>
+  <div class="lane"><span class="who s">結果</span>
+    <div class="bx s wide">https://ユーザー名.github.io/資料名/ という、誰でも開けるURLが完成（修正して再実行すると同じURLの中身が更新されます）</div>
+  </div>
+</div>
+<table>
+<tr><th>人がやる</th><th>Claudeが自走でやる</th></tr>
+<tr><td>公開してよい資料か判断／名前案のOK</td><td>ファイル整理・命名・重複チェック・GitHubへのアップ・公開設定・公開確認・URL報告</td></tr>
+</table>
+
+<h3>② Notion議事録同期スキルの流れ</h3>
+<div class="fd g">
+  <div class="lane"><span class="who h">あなた</span>
+    <div class="bx h">「議事録を同期して」と入力</div>
+    <div class="ar">→</div>
+    <div class="bx h dim">振り分け表を見て「OK」<br>（違えば直す）</div>
+    <div class="ar">→</div>
+    <div class="bx h">フォルダで議事録を活用</div>
+  </div>
+  <div class="lane"><span class="who c">Claude Code<br>（自走）</span>
+    <div class="bx c">前回の同期日を確認</div>
+    <div class="ar">→</div>
+    <div class="bx c">Notionから新着だけ取得</div>
+    <div class="ar">→</div>
+    <div class="bx c">社内／クライアント／PJに自動判定</div>
+    <div class="ar">→</div>
+    <div class="bx c">要点とアクションを整形して保存</div>
+    <div class="ar">→</div>
+    <div class="bx c">同期日を更新</div>
+  </div>
+  <div class="lane"><span class="who s">結果</span>
+    <div class="bx s wide">日付つきのファイルが、案件ごとのフォルダに整理されて溜まる。次回は新着分だけ処理（二重取り込みなし）</div>
+  </div>
+</div>
+<table>
+<tr><th>人がやる</th><th>Claudeが自走でやる</th></tr>
+<tr><td>初回の設定の質問に答える／振り分け結果の確認</td><td>新着の取得・カテゴリ判定・フォルダ作成・ファイル名付け・要約整形・保存・同期日の記録</td></tr>
+</table>
+
+<h3>2つを組み合わせると：議事録から提案書、そしてURL共有まで</h3>
+<div class="fd">
+  <div class="lane">
+    <div class="bx s">Notionに<br>議事録が溜まる</div><div class="ar">→</div>
+    <div class="bx c">② 同期スキル<br>案件別フォルダに整理</div><div class="ar">→</div>
+    <div class="bx c">Claudeが議事録を読んで<br>提案書HTMLを作成</div><div class="ar">→</div>
+    <div class="bx c">① 公開スキル<br>URLを発行</div><div class="ar">→</div>
+    <div class="bx s">URLを<br>クライアントへ送付</div>
+  </div>
+</div>
+<div class="note">どちらも「スキル」＝<b>手順書を1回書いておけば、次回からは一言で動く</b>仕組みです。人間は判断（公開してよいか・振り分けが正しいか）に集中できます。</div>
+
+<h3>導入そのものもClaudeが自走します</h3>
+<div class="fd">
+  <div class="lane">
+    <div class="bx h">この資料のURLを<br>Claude Codeに貼る</div><div class="ar">→</div>
+    <div class="bx c">質問しながらヒアリング<br>（OS・アカウント・保存先）</div><div class="ar">→</div>
+    <div class="bx h dim">ログイン・認証だけ<br>ご自身で操作</div><div class="ar">→</div>
+    <div class="bx c">SKILL.md作成<br>＋試運転</div><div class="ar">→</div>
+    <div class="bx s">以後は一言で<br>使える状態</div>
+  </div>
+</div>
+<p style="font-size:13px;color:var(--sub)">凡例：<span class="bx h" style="display:inline-block;padding:1px 10px">あなたの操作</span>　<span class="bx c" style="display:inline-block;padding:1px 10px">Claudeが自走</span>　<span class="bx s" style="display:inline-block;padding:1px 10px">成果物</span></p>
 </section>
 
 <!-- ================= A ================= -->
