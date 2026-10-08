@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Code スキル解説：GitHub Pages公開 ＆ Notion議事録同期</title>
+<style>
+:root{--ink:#1d2330;--sub:#5b6577;--line:#e3e7ee;--bg:#f6f8fb;--acc:#2f5bea;--acc2:#0f9d7a;--warn:#fff6e0;--warnl:#f0c36a}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif;color:var(--ink);background:var(--bg);line-height:1.85;font-size:16px}
+header{background:#fff;border-bottom:1px solid var(--line);padding:56px 24px 44px}
+.wrap{max-width:860px;margin:0 auto;padding:0 24px}
+header .wrap{padding:0}
+h1{font-size:30px;line-height:1.4;margin:8px 0 14px}
+.lead{color:var(--sub);margin:0}
+.tag{display:inline-block;font-size:12px;font-weight:700;color:var(--acc);background:#e9eefe;padding:2px 10px;border-radius:99px}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+nav a{padding:8px 16px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink);font-size:14px;background:#fff}
+nav a:hover{border-color:var(--acc);color:var(--acc)}
+section{padding:48px 0 8px}
+h2{font-size:24px;margin:0 0 6px;padding-left:14px;border-left:6px solid var(--acc)}
+section.n h2{border-color:var(--acc2)}
+h3{font-size:18px;margin:36px 0 10px}
+p{margin:10px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin:16px 0}
+.flow{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;margin:16px 0}
+.flow div{flex:1;min-width:150px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;position:relative}
+.flow div b{display:block;color:var(--acc);font-size:12px}
+section.n .flow div b{color:var(--acc2)}
+.eg{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 20px;margin:12px 0}
+.eg .u{font-weight:700}
+.step{counter-increment:s;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px 10px 64px;margin:14px 0;position:relative}
+.step::before{content:counter(s);position:absolute;left:18px;top:16px;width:32px;height:32px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+section.n .step::before{background:var(--acc2)}
+.steps{counter-reset:s}
+.step h4{margin:0 0 6px;font-size:16px}
+pre{background:#161b26;color:#e8ecf4;border-radius:10px;padding:16px 18px;overflow:auto;font-size:13px;line-height:1.65;margin:10px 0;position:relative;white-space:pre-wrap;word-break:break-all}
+code{background:#eef1f6;padding:1px 6px;border-radius:4px;font-size:14px}
+pre code{background:none;padding:0;font-size:inherit}
+.cp{position:absolute;right:8px;top:8px;font-size:12px;background:#2c3447;color:#fff;border:0;border-radius:6px;padding:4px 10px;cursor:pointer}
+.cp:hover{background:var(--acc)}
+.note{background:var(--warn);border:1px solid var(--warnl);border-radius:10px;padding:12px 16px;font-size:14px;margin:14px 0}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);font-size:14px;margin:12px 0}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:#eef1f6}
+ul{padding-left:22px}
+footer{padding:40px 0 60px;color:var(--sub);font-size:13px;text-align:center}
+@media(max-width:600px){h1{font-size:24px}.step{padding-left:56px}}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+<span class="tag">Claude Code スキル解説</span>
+<h1>資料を1コマンドでWeb公開 ＆<br>Notion議事録を自動でフォルダ整理</h1>
+<p class="lead">Claude Codeを使っている方なら、どなたでも導入できる2つの「スキル」をご紹介します。各スキルについて、まず「何ができるか」、次に「どう作るか」の順に解説します。</p>
+<nav><a href="#s0">スキルとは？</a><a href="#a">① GitHub Pages公開スキル</a><a href="#b">② Notion議事録同期スキル</a><a href="#faq">つまずきやすい点</a><a href="#ai">Claude向け導入ガイド</a></nav>
+</div></header>
+
+<main class="wrap">
+
+<section id="s0">
+<h2>はじめに：「スキル」とは</h2>
+<p>スキルとは、<b>Claude Codeに覚えさせておく「作業手順書」</b>です。1つのフォルダに <code>SKILL.md</code> というテキストファイルを置くだけで完成し、以後は「<code>/スキル名</code>」と入力する（または決まった言葉で話しかける）と、Claudeが手順書どおりに作業します。</p>
+<div class="card">
+<b>置き場所（どちらか）</b>
+<ul>
+<li><b>自分のPC全体で使う</b>：<code>~/.claude/skills/スキル名/SKILL.md</code>（Windowsは <code>C:\Users\ユーザー名\.claude\skills\スキル名\SKILL.md</code>）</li>
+<li><b>特定プロジェクトだけで使う</b>：<code>プロジェクト/.claude/skills/スキル名/SKILL.md</code></li>
+</ul>
+</div>
+<p>この資料では、どの広告代理店・制作会社でも使えるよう、<b>自社名・取引先名を含まない汎用版</b>で手順を解説します。</p>
+
+<h3>いちばん簡単な導入方法：この資料をClaude Codeに読み込ませる</h3>
+<p>この資料は、<b>Claude Codeに読み込ませると、Claudeが質問しながら導入を進めてくれる</b>ように作ってあります。手作業でコピーする必要はありません。</p>
+<div class="steps">
+<div class="step"><h4>この資料のURLをClaude Codeに渡す</h4>
+<p>下の文章をそのままClaude Codeのチャットに貼り付けます。<code>（この資料のURL）</code>の部分は、いま開いているこのページのURLに置き換えてください。HTMLファイルを受け取った場合は、ファイルのパスでも構いません。</p>
+<pre><button class="cp">コピー</button><code>次の資料を読んで、記載のスキル（GitHub Pages公開 / Notion議事録同期）を私のPCに導入してください。
+資料：（この資料のURL または HTMLファイルのパス）
+資料末尾の「Claude向け導入ガイド」に従い、私の状況を1つずつ質問しながら進めてください。</code></pre></div>
+<div class="step"><h4>Claudeの質問に答える</h4>
+<p>導入したいスキルの選択、GitHubやNotionの利用状況、保存先フォルダなどを聞かれます。答えるだけで、必要なコマンドの案内からSKILL.mdの作成、試運転までClaudeが進めます。</p></div>
+</div>
+</section>
+
+<!-- ================= A ================= -->
+<section id="a">
+<h2>① GitHub Pages公開スキル</h2>
+<span class="tag">資料を1コマンドでURL化</span>
+
+<h3>何ができる？</h3>
+<p>Claudeが作った提案書・レポートなどの<b>HTML資料を、そのままインターネット上のURLで公開</b>します。ファイルをメールに添付する代わりに、URLを送るだけで先方が見られます。</p>
+<div class="flow">
+<div><b>STEP 1</b>公開したいHTMLを特定</div>
+<div><b>STEP 2</b>資料の内容から公開名を自動命名</div>
+<div><b>STEP 3</b>GitHubに保管用フォルダ（リポジトリ）を作成</div>
+<div><b>STEP 4</b>GitHub Pagesで公開</div>
+<div><b>完了</b>公開URLを返す</div>
+</div>
+
+<h3>使いどころ</h3>
+<div class="eg"><span class="u">例1</span>　クライアントへの提案書をURLで共有（添付容量・文字化け・バージョン違いの心配なし）</div>
+<div class="eg"><span class="u">例2</span>　社内向けのレポート・調査まとめを、チームにURLで一斉共有</div>
+<div class="eg"><span class="u">例3</span>　スマホで見せたい企画書（URLを開くだけ・修正したら同じURLが更新される）</div>
+
+<h3>公開した資料の実例</h3>
+<div class="eg">実際にこのスキルで公開した提案書です。URLを送るだけで、先方がスマホやPCですぐ閲覧できます。<br>
+<a href="https://msk1004.github.io/tobishitieup1007/" target="_blank" rel="noopener">https://msk1004.github.io/tobishitieup1007/</a></div>
+
+<h3>使い方（導入後）</h3>
+<pre><button class="cp">コピー</button><code>/gitpages ファイルパス(任意) リポジトリ名(任意)</code></pre>
+<p>省略すると、直前の会話で作ったHTMLが対象になります。リポジトリ名は、実行前にClaudeが提案して確認してくれます。</p>
+
+<div class="note"><b>ご注意：</b>GitHub Pages（無料）は<b>URLを知っている人なら誰でも見られる</b>公開設定です。社外秘情報・他社との取引条件が入った資料は公開しないでください。また公開名にクライアント名を入れる場合は、そのクライアント本人に共有する用途に限りましょう。</div>
+
+<h3>実装方法（所要 約15分）</h3>
+<div class="steps">
+
+<div class="step">
+<h4>GitHubアカウントを作る</h4>
+<p><a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a> から無料登録します。決めた<b>ユーザー名</b>は後で使うのでメモしてください。</p>
+</div>
+
+<div class="step">
+<h4>GitHub CLI（<code>gh</code>）をインストール</h4>
+<p>Claudeが代わりにGitHubを操作するための公式ツールです。</p>
+<p><b>Windows</b>（PowerShell）</p>
+<pre><button class="cp">コピー</button><code>winget install --id GitHub.cli</code></pre>
+<p><b>Mac</b>（ターミナル）</p>
+<pre><button class="cp">コピー</button><code>brew install gh</code></pre>
+<p>インストール後、ターミナルを一度閉じて開き直してください。</p>
+</div>
+
+<div class="step">
+<h4>GitHubにログイン（初回のみ）</h4>
+<pre><button class="cp">コピー</button><code>gh auth login</code></pre>
+<p>質問が出たら、矢印キーとEnterで <b>GitHub.com → HTTPS → Yes → Login with a web browser</b> の順に選びます。画面に表示される8桁のコードをブラウザに入力すれば完了です。</p>
+<p>確認：<code>gh auth status</code> と入力して「Logged in」と出ればOKです。</p>
+</div>
+
+<div class="step">
+<h4>スキルのファイルを作る</h4>
+<p>次のフォルダを作り、中に <code>SKILL.md</code> という名前で下記の内容を保存します。<b>「あなたのGitHubユーザー名」の部分だけ書き換えてください。</b></p>
+<pre><button class="cp">コピー</button><code>~/.claude/skills/gitpages/SKILL.md</code></pre>
+<p>ヒント：Claude Codeに「上の場所に、次の内容でSKILL.mdを作って」と貼り付けて頼めば、フォルダ作成から保存まで代行してくれます。</p>
+<pre><button class="cp">コピー</button><code>---
+name: gitpages
+description: HTMLで作成した資料を、内容から命名した新規GitHubリポジトリでGitHub Pages公開し、公開URLを返す。「公開して」「URLにして」「gitpages」と言われたら使う。
+---
+
+# GitHub Pages公開ワークフロー
+
+## 前提
+- GitHubユーザー名: あなたのGitHubユーザー名
+- 公開URL形式: https://あなたのGitHubユーザー名.github.io/{リポジトリ名}/
+- GitHub CLI(gh)が認証済みであること
+
+## 使い方
+/gitpages [ファイルパス(任意)] [リポジトリ名(任意)]
+- ファイルパス省略時は、直近の会話で作成した.htmlを対象にする
+- リポジトリ名を指定した場合は自動命名をスキップする
+
+## Step 0: 認証確認
+`gh auth status` を実行。未ログインなら、ユーザーに `gh auth login` の実行を案内し、完了報告を待つ（対話操作のため代行不可）。
+
+## Step 1: 対象ファイルの特定
+対象HTMLと、それが相対パスで参照するCSS・JS・画像を収集する。不明な場合はユーザーに確認する。
+
+## Step 2: リポジトリ名の自動命名
+資料の内容(宛先・資料種別・作成日)から、半角英数字・小文字のみのスラッグを作る。
+形式: {宛先や案件の英語スラッグ}{資料種別の英単語}{MMDD}  例: abcproposal0814
+`gh repo view {名前}` で既存確認し、重複時は末尾に v2, v3 を付ける。
+実行前に、決めた名前をユーザーに提示して確認を取る。
+
+## Step 3: 公開用フォルダの準備
+作業用フォルダに対象HTMLを index.html としてコピー（アセットは相対パス構造を維持）し、
+git init → main ブランチ → add → commit する。
+
+## Step 4: 作成・push・公開
+gh repo create {リポジトリ名} --public --source=. --remote=origin --push
+gh api -X POST "repos/あなたのGitHubユーザー名/{リポジトリ名}/pages" -f "source[branch]=main" -f "source[path]=/"
+※権限設定でブロックされた場合は、作業フォルダの場所と上記2コマンドをユーザーに案内し、実行完了を待つ。無断でブロックを回避しない。
+
+## Step 5: 公開確認
+gh api repos/あなたのGitHubユーザー名/{リポジトリ名}/pages で "status":"built" を確認する。"building" の場合は少し待って再確認。
+
+## Step 6: 完了報告
+公開URL・リポジトリURL・対象ファイルパスを提示する。
+
+## 注意事項
+- リポジトリは public で作成する（GitHub Pages無料利用のため）
+- 公開前に、社外秘情報・他社の取引条件・個人情報が資料に含まれていないかユーザーに確認を促す
+- 公開は外部への発信行為のため、必ずユーザー確認を経てから実行する</code></pre>
+</div>
+
+<div class="step">
+<h4>Claude Codeを再起動して試す</h4>
+<p>Claude Codeを開き直し、まず練習用の簡単なHTMLで試します。</p>
+<pre><button class="cp">コピー</button><code>「こんにちは」とだけ表示するHTMLを作って、/gitpages で公開して</code></pre>
+<p>リポジトリ名の確認 → 公開 → URLが返ってくれば成功です。公開反映には1〜2分かかることがあります。</p>
+</div>
+</div>
+</section>
+
+<!-- ================= B ================= -->
+<section id="b" class="n">
+<h2>② Notion議事録同期スキル</h2>
+<span class="tag" style="color:#0f9d7a;background:#e3f6f0">議事録を自動で整理・保存</span>
+
+<h3>何ができる？</h3>
+<p>Notion（AI議事録やミーティングノート）に溜まった議事録を、<b>前回の同期以降の新しい分だけ取得し、パソコン内のフォルダへ「社内／クライアント別／プロジェクト別」に自動で振り分けて保存</b>します。「議事録を同期して」と話しかけるだけです。</p>
+<div class="flow">
+<div><b>STEP 1</b>前回同期した日付以降の議事録をNotionから取得</div>
+<div><b>STEP 2</b>タイトル・親ページ名からカテゴリを自動判定</div>
+<div><b>STEP 3</b>振り分け結果を表で提示 → 確認</div>
+<div><b>STEP 4</b>日付つきファイルで一括保存</div>
+<div><b>完了</b>同期日を更新（次回は差分のみ）</div>
+</div>
+
+<h3>使いどころ</h3>
+<div class="eg"><span class="u">例1</span>　週明けに「先週の打合せ」をまとめて取り込み、案件フォルダに整理</div>
+<div class="eg"><span class="u">例2</span>　過去の議事録をフォルダ単位で保管し、提案書づくりのときにClaudeに読み込ませる</div>
+<div class="eg"><span class="u">例3</span>　アクションアイテム（担当者・期限）だけを一覧で確認</div>
+
+<h3>保存されるもの・フォルダ構成</h3>
+<pre><code>議事録/
+├── 社内/
+│   └── 20261006_週次チームMTG.md
+├── クライアント/
+│   └── ABC商事/
+│       └── 20261005_ABC商事_提案打合せ.md
+└── プロジェクト/
+    └── 新商品PR/
+        └── 20261004_新商品PR_キックオフ.md</code></pre>
+<p>ファイルには「日時・カテゴリ・セクション別の要点・アクションアイテム（担当者・期限）」を保存します。<b>文字起こし全文は保存しません</b>（要約のみ）。</p>
+
+<h3>実装方法（所要 約10分）</h3>
+<div class="steps">
+
+<div class="step">
+<h4>Notionに議事録を溜める環境を用意</h4>
+<p>Notionの<b>AIミーティングノート</b>機能、または手動で作った議事録ページなど、Notion上に議事録があればOKです。親ページ名を「取引先名」にしておくと、自動振り分けの精度が上がります。</p>
+</div>
+
+<div class="step">
+<h4>Claude CodeにNotionを接続（MCP連携）</h4>
+<p>ターミナルで次のコマンドを実行します。</p>
+<pre><button class="cp">コピー</button><code>claude mcp add --transport http notion https://mcp.notion.com/mcp</code></pre>
+<p>Claude Codeを起動し、チャットに <code>/mcp</code> と入力 → <b>notion</b> を選んで認証（ブラウザでNotionにログインし、「許可」を押す）します。「connected」と表示されれば完了です。</p>
+<p>デスクトップアプリの場合は、設定のコネクタ（Connectors）からNotionを追加しても同じです。</p>
+</div>
+
+<div class="step">
+<h4>スキルのファイルを作る</h4>
+<p>次の場所に、下記の内容で <code>SKILL.md</code> を保存します。</p>
+<pre><button class="cp">コピー</button><code>~/.claude/skills/notion-sync/SKILL.md</code></pre>
+<p>ヒント：ここでも「次の内容でSKILL.mdを作って」とClaudeに貼り付ければ代行してくれます。</p>
+<pre><button class="cp">コピー</button><code>---
+name: notion-sync
+description: Notionの議事録を取得し、ローカルのフォルダへカテゴリ別に自動振り分けして保存する。「議事録を同期して」「Notionを同期」と言われたら使う。
+---
+
+# Notion議事録ローカル同期
+
+## 設定ファイル
+このSKILL.mdと同じフォルダの config.json を使う。無ければ「初回設定」を行って作成する。
+
+## 初回設定（config.jsonが無い場合のみ）
+次を順にユーザーへ質問し、config.json を作る。
+1. 議事録の保存先フォルダ（無ければ作成）
+2. 使うカテゴリ（社内 / クライアント別 / プロジェクト別・複数可）
+3. 「社内」と判断するキーワード（例: 週次, 全体会議, 部内）
+4. 既知のクライアント名・プロジェクト名（省略可）
+5. どれにも当てはまらない議事録の扱い（クライアント別 / プロジェクト別 / 毎回確認）
+
+config.json の形式:
+{
+  "base_dir": "保存先フォルダのパス",
+  "last_synced_date": "2020-01-01",
+  "categories": {
+    "社内": {"enabled": true, "folder": "社内", "keywords": []},
+    "クライアント": {"enabled": true, "folder": "クライアント", "clients": []},
+    "プロジェクト": {"enabled": false, "folder": "プロジェクト", "projects": []}
+  },
+  "default_category": "クライアント"
+}
+
+## 同期の手順
+1. config.json を読み、last_synced_date を取得する。
+2. Notion MCPの notion-query-meeting-notes で、created_time が last_synced_date 以降の議事録を取得する。
+   - 「date_is_after」はエラーになるため「date_is_on_or_after」を使い、取得後に last_synced_date と同日のものは除外する。
+   - 0件なら「新しい議事録はありません」と報告して終了。
+3. 各議事録を notion-fetch で取得（並行実行）。親ページ名・本文のセクション・アクションアイテムを使う。文字起こし全文は保存しない。
+4. 次の優先順位でカテゴリを判定する。
+   ① 親ページ名またはタイトルに「社内キーワード」を含む → 社内
+   ② 親ページ名が clients のいずれかに部分一致 → クライアント/{会社名}
+   ③ 親ページ名またはタイトルが projects のいずれかに部分一致 → プロジェクト/{PJ名}
+   ④ 該当なし → default_category に従う（「手動」なら未分類として残す）
+   ※親ページ名の末尾の「様」「御中」「さん」や記号は除いてから照合する。
+5. 振り分け結果を表（番号・日付・タイトル・カテゴリ・保存先）で提示し、ユーザーの確認を取る。修正指示があれば反映して再提示。
+6. 承認後、フォルダを作成し、次の形式で保存する。
+   - ファイル名: YYYYMMDD_{サブフォルダ名}_{タイトル}.md（社内はサブフォルダ名を省略）
+   - タイトル中の「@昨日」などの日付メンションは除去
+   - 同名ファイルがあれば上書きせず末尾に _2, _3 を付ける
+   - 内容: タイトル / 日時 / カテゴリ / Notion親ページ名 / セクション別の箇条書き / アクションアイテム（- [ ] 担当者：内容（期限：YYYY-MM-DD））
+7. 保存後、config.json の last_synced_date を、処理した中で最も新しい議事録の日付に更新する。
+8. 処理件数と保存先の一覧を報告する。新規作成したフォルダは「新規」と明記する。
+
+## 注意
+- Notionへの書き込み・削除は行わない（読み取り専用）
+- config.json が壊れている場合は、読めない旨を伝えて設定のリセットを確認する</code></pre>
+</div>
+
+<div class="step">
+<h4>Claude Codeを再起動して初回実行</h4>
+<p>チャットで次のように話しかけます。</p>
+<pre><button class="cp">コピー</button><code>議事録を同期して</code></pre>
+<p>初回は<b>設定ウィザード</b>が始まり、保存先フォルダ・社内キーワードなどを質問されます。答えるだけで設定が保存され、2回目以降は質問なしで同期が走ります。</p>
+</div>
+
+<div class="step">
+<h4>運用のコツ</h4>
+<ul>
+<li>週1回など、決まったタイミングで「議事録を同期して」と話しかける</li>
+<li>振り分けが違っていたら確認の表で「#2 クライアント XYZ社」のように直す（その内容を <code>config.json</code> のクライアント一覧に追記しておくと、次回から自動で正しく振り分けられます）</li>
+<li>設定を作り直したいときは <code>config.json</code> を削除して再実行</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- ================= FAQ -->
+<section id="faq">
+<h2>つまずきやすい点</h2>
+<table>
+<tr><th>症状</th><th>対処</th></tr>
+<tr><td><code>/gitpages</code> が反応しない</td><td>SKILL.mdの場所（<code>skills/gitpages/SKILL.md</code>）と、先頭の <code>---</code> で囲んだ <code>name</code>・<code>description</code> を確認。Claude Codeを再起動する</td></tr>
+<tr><td>公開URLが「404」になる</td><td>公開反映に1〜2分かかります。少し待ってから再読み込みしてください</td></tr>
+<tr><td>リポジトリ作成が権限設定でブロックされた</td><td>公開行為のため確認が入ることがあります。Claudeが案内するコマンドを、ご自身でターミナルに貼り付けて実行してください</td></tr>
+<tr><td><code>gh</code> が見つからない</td><td>インストール後にターミナルを開き直す。それでも出ない場合はPCを再起動</td></tr>
+<tr><td>Notionの議事録が取得できない</td><td><code>/mcp</code> でnotionが connected か確認。未認証なら認証し直す。対象ページがNotion側で連携に共有されているかも確認</td></tr>
+<tr><td>「新しい議事録はありません」と出る</td><td><code>config.json</code> の <code>last_synced_date</code> が未来日になっていないか確認</td></tr>
+</table>
+
+<div class="card">
+<b>ほかの業務にも応用できます</b>
+<ul>
+<li>スキルは「いつもの手順を文章で書く」だけで作れます。この2つを土台に、<b>見積書づくり・週報のまとめ・クライアント情報のリサーチ</b>など、毎回同じ流れの作業をスキル化すると効果的です。</li>
+<li>「いつもやっている手順をスキルにしたい」とClaudeに相談すると、SKILL.mdの下書きを作ってくれます。</li>
+</ul>
+</div>
+</section>
+
+<!-- ================= AI GUIDE -->
+<section id="ai">
+<h2>Claude向け導入ガイド</h2>
+<div class="note">この章は、この資料を読み込んだ<b>Claude Code向けの指示</b>です。人が読む必要はありません。ユーザーから「この資料を読んで導入して」と依頼された場合のみ、以下に従ってください。</div>
+<div class="card" id="claude-guide">
+<p><b>目的</b>：本資料の2つのスキル（①gitpages ②notion-sync）を、ユーザーのPCに導入する。ユーザーはClaude Codeの利用者だが、GitHub・Notion・ターミナル操作に不慣れな可能性がある。専門用語を避け、1回の質問は1〜2点にとどめること。</p>
+
+<p><b>進め方</b></p>
+<ol>
+<li><b>ヒアリング</b>：次を順に質問する。
+<ul>
+<li>導入したいスキル（①のみ／②のみ／両方）</li>
+<li>OS（Windows／Mac）</li>
+<li>①の場合：GitHubアカウントの有無とユーザー名、<code>gh</code>がインストール・ログイン済みか（<code>gh --version</code>、<code>gh auth status</code>で確認してよい）</li>
+<li>②の場合：Notionに議事録があるか、Notion MCPが接続済みか、議事録の保存先フォルダ、自社内会議を判別するキーワード、主なクライアント名／プロジェクト名（任意）</li>
+</ul></li>
+<li><b>事前準備の案内</b>：未導入の項目（GitHubアカウント作成、<code>gh</code>インストール、<code>gh auth login</code>、<code>claude mcp add --transport http notion https://mcp.notion.com/mcp</code>と<code>/mcp</code>での認証）は、本資料の各「実装方法」に沿って案内する。ブラウザ認証や<code>gh auth login</code>など対話操作はユーザー自身に実行してもらい、完了報告を待つ。パスワード・トークンをチャットで受け取ってはならない。</li>
+<li><b>SKILL.mdの作成</b>：本資料内の該当SKILL.md全文（各「スキルのファイルを作る」のコードブロック）を、<code>~/.claude/skills/gitpages/SKILL.md</code>・<code>~/.claude/skills/notion-sync/SKILL.md</code>に保存する。①はヒアリングしたGitHubユーザー名で「あなたのGitHubユーザー名」を全て置換する。②はヒアリング結果から同フォルダに<code>config.json</code>を作成してよい（作成前に内容をユーザーに見せて確認）。既存の同名ファイルがある場合は上書きせず、ユーザーに確認する。</li>
+<li><b>試運転</b>：Claude Codeの再起動を案内する。①は「こんにちは」だけのHTMLを作って公開する練習を、②は議事録の同期を提案する。公開・外部書き込みなど外部への発信を伴う操作は、実行前にユーザーの承認を得る。</li>
+<li><b>完了報告</b>：導入したスキル、保存場所、使い方（<code>/gitpages</code>、「議事録を同期して」）を簡潔に伝える。</li>
+</ol>
+
+<p><b>守ること</b></p>
+<ul>
+<li>日本語・丁寧で簡潔な言葉で案内する。</li>
+<li>GitHub Pagesは誰でも閲覧できる公開設定である点を、初回公開前に必ず説明する。</li>
+<li>Notionは読み取りのみ。Notion側の内容を書き換えない。</li>
+<li>つまずいた場合は、本資料の「つまずきやすい点」の表を参照して対処する。</li>
+</ul>
+</div>
+</section>
+
+</main>
+<footer>Claude Code スキル解説資料　／　2026年10月</footer>
+
+<script>
+document.querySelectorAll('.cp').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.parentElement.querySelector('code').innerText;
+    navigator.clipboard.writeText(t).then(function(){b.textContent='コピーしました';setTimeout(function(){b.textContent='コピー'},1500)});
+  });
+});
+</script>
+</body>
+</html>
